@@ -1,0 +1,13 @@
+To Do:
+* Change binary Union to unary Union
+* Create TypeList
+* Implement variadic Union
+* Implement variadic TaggedUnion
+* Implement IndirectValue
+* Create TaggedUnionUtil
+* Create TaggedUnionVisitor
+* Create a test AST with TaggedUnion & IndirectValue
+
+Done:
+* Implement binary union
+* Design variadic union
