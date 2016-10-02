@@ -6,6 +6,7 @@
 //  using the Lark Project Structure.
 
 // LARK HEADERS
+#include <m_lrkbld_cursor.h>
 
 // C STANDARD LIBRARY HEADERS
 #include <cassert>
@@ -109,6 +110,9 @@ struct DirectoryUtil final {
     // directories.
 
     // CLASS METHODS
+    static ErrorCode getEntries(Cursor<DirectoryEntry> *output,
+                                const std::string&      directoryName);
+
     static ErrorCode getEntries(std::vector<DirectoryEntry> *entries,
                                 const std::string&           directoryName);
         // ..

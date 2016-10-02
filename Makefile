@@ -1,7 +1,9 @@
 # Makefile
 
 SOURCES   = src/applications/m_lrkbld/m_lrkbld.m.cpp
-CPP_FLAGS = -std=c++14 -fno-use-linker-plugin
+CPP_FLAGS = -std=c++14
+
+CPP = g++-6
 
 TASK=bake
 
