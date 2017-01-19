@@ -77,17 +77,17 @@ using Integer64 = SizedInteger<8>;
 using Integer   = SizedInteger<8>;
 
 // STATIC ASSERTIONS
-static_assert(1 == sizeof(Integer8 ));
-static_assert(2 == sizeof(Integer16));
-static_assert(4 == sizeof(Integer32));
-static_assert(8 == sizeof(Integer64));
-static_assert(8 == sizeof(Integer  ));
+static_assert(1 == sizeof(Integer8 ), "");
+static_assert(2 == sizeof(Integer16), "");
+static_assert(4 == sizeof(Integer32), "");
+static_assert(8 == sizeof(Integer64), "");
+static_assert(8 == sizeof(Integer  ), "");
 
-static_assert(1 == alignof(Integer8 ));
-static_assert(2 == alignof(Integer16));
-static_assert(4 == alignof(Integer32));
-static_assert(8 == alignof(Integer64));
-static_assert(8 == alignof(Integer  ));
+static_assert(1 == alignof(Integer8 ), "");
+static_assert(2 == alignof(Integer16), "");
+static_assert(4 == alignof(Integer32), "");
+static_assert(8 == alignof(Integer64), "");
+static_assert(8 == alignof(Integer  ), "");
 
 } // close package namespace
 } // close product namespace

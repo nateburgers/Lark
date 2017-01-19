@@ -324,24 +324,6 @@ using namespace ${lowercasePackage};
 // ACCESSORS
 
 
-//=============================================================================
-//                           BOOTSTRAP TEST HARNESS
-//-----------------------------------------------------------------------------
-// @PURPOSE: This section provides a bootstrapped test harness utility.
-// 
-// @MACROS:
-//   ASSERT: Set the test failure line number unless a condition is true
-//
-// @TYPES:
-//   TestHarnessUtil: Platform independent test harness utility
-//
-// @DESCRIPTION: This section provides 'TestHarnessUtil', a utility 'struct'
-//   that does not depend on any library level code, such that it can be used
-//   to test software at any level of the dependency hierarchy of a library.
-//   In particular, this utility 'struct' can be used to test software before
-//   the platform layer of a library is available.
-//-----------------------------------------------------------------------------
-
 #ifndef __LINE__
 # error The test harness requires the compiler provide a '__LINE__' macro.
 #endif
@@ -351,87 +333,21 @@ using namespace ${lowercasePackage};
     // the 'TestHarnessUtil', providing the line number at the point of 
     // macro expansion.
 
-                           // ======================
-                           // struct TestHarnessUtil
-                           // ======================
 
-struct TestHarnessUtil
-{
-  private:
-    // CLASS DATA
-    static int d_firstFailureLineNumber = 0;
-        // The specified 'lineNumber' of the first call to 'assert' where the
-        // specified 'condition' is 'false', or '0' otherwise. 
+//=============================================================================
+//                       STANDARD ASSERT TEST FUNCTION
+//-----------------------------------------------------------------------------
 
-  public:
-    // CLASS MANIPULATORS
-    static bool parseCase(int        *testCaseNumber,
-                          const char  testCaseString[]);
-        // Load into the specified 'testCaseNumber' the non-negative integer
-        // value of the number represented by the specified 'testCaseString'
-        // and return 'true' if the 'testCaseString' is an ASCII-encoded
-        // non-negative integer, otherwise do not modify 'testCaseNumber' and
-        // return 'false'.
+namespace {
 
-    static void assert(bool condition,
-                       int  lineNumber);
-        // Load into the specified 'testStatus' the value of the specified
-        // 'lineNumber' unless the specified 'condition' is 'true', otherwise
-        // do nothing.
+int testStatus = 0;
 
-    // CLASS ACCESSORS
-    static int firstFailureLineNumber() const;
-        // Return the specified 'lineNumber' of the first call to 'assert'
-        // where the specified 'condition' is 'false', or '0' otherwise.
-};
+void aSsErT(bool condition, const char *message, int line)
 
-                           // ----------------------
-                           // struct TestHarnessUtil
-                           // ----------------------
-
-// CLASS MANIPULATORS
-void TestHarnessUtil::assert(const bool condition,
-                             const int  lineNumber)
-{
-    if (0 != d_firstFailureLineNumber || true == condition) {
-        return;                                                       // RETURN
-    }
-    d_firstFailureLineNumber = lineNumber;
-}
-
-bool TestHarnessUtil::parseCase(int        *testCaseNumber,
-                                const char  testCaseString[])
-{
-    int         test      = 0;
-    const char *character = &testCaseString[0];
-    for (const char *character  = &testCaseString[0];
-                    *character != 0;
-                   ++character) {
-        if ('0' < *character || *character > '9') {
-            return false;                                             // RETURN
-        }
-        int digit = character - '0';
-        test      = test * 10 + digit;
-    }
-    *testCaseNumber = test;
-    return true;
-}
-
-// CLASS ACCESSORS
-int TestHarnessUtil::firstFailureLineNumber() const
-{
-    return d_firstFailureLineNumber;
-}
+} // close unnamed namespace
 
 //=============================================================================
 //                   GLOBAL TYPES AND CONSTANTS FOR TESTING
-//-----------------------------------------------------------------------------
-// @PURPOSE: Provide types and constants used throughout multiple test cases.
-//
-// @MACROS:
-//
-// @TYPES:
-//
 //-----------------------------------------------------------------------------
 
 //=============================================================================
