@@ -2,79 +2,115 @@
 #ifndef INCLUDED_LRKP_INTEGER
 #define INCLUDED_LRKP_INTEGER
 
-//@PURPOSE:
+//@PURPOSE: Provide a set of integer types specified by size.
 //
 //@TYPES:
+//  lrkp::Integer8:   8-bit signed integer
+//  lrkp::Integer16: 16-bit signed integer
+//  lrkp::Integer32: 32-bit signed integer
+//  lrkp::Integer64: 64-bit signed integer
+//  lrkp::Integer:   64-bit signed integer
 //
-//@SEE_ALSO:
+//@SEE_ALSO: lrkp_natural, lrkp_real
 //
 //@DESCRIPTION:
 //
 
 namespace LarkCompiler {
 namespace lrkp {
+namespace {
 
-                               // ============
-                               // type INTEGER
-                               // ============
+                              // ================
+                              // enum IntegerType
+                              // ================
 
-// TODO(nate): put the below type machinery into a utility.
-template <unsigned SIZE, typename... TYPES>
-struct IntegerSearch;
+enum class IntegerType {
+    e_SIGNED_CHAR          =  0,
+    e_SIGNED_SHORT_INT     =  1,
+    e_SIGNED_INT           =  2,
+    e_SIGNED_LONG_INT      =  3,
+    e_SIGNED_LONG_LONG_INT =  4,
 
-template <bool CONDITION, unsigned SIZE, typename TYPE, typename... TYPES>
-struct IntegerSearchCondition;
-
-template <unsigned SIZE, typename TYPE, typename... TYPES>
-struct IntegerSearchCondition<true, SIZE, TYPE, TYPES...> {
-    using Type = TYPE;
+    e_ERROR                = -1,
 };
 
-template <unsigned SIZE, typename TYPE, typename... TYPES>
-struct IntegerSearchCondition<false, SIZE, TYPE, TYPES...> {
-    using Type = typename IntegerSearch<SIZE, TYPES...>::Type;
+                  // ========================================
+                  // struct IntegerWithType<IntegerType TYPE>
+                  // ========================================
+
+template <IntegerType TYPE>
+struct IntegerWithType final {
+    struct Type;
 };
 
-template <unsigned SIZE, typename TYPE, typename... TYPES>
-struct IntegerSearch<SIZE, TYPE, TYPES...> {
-    using Type =
-        typename IntegerSearchCondition<
-            SIZE == sizeof(TYPE),
-            SIZE,
-            TYPE,
-            TYPES...
-        >::Type;
+template <>
+struct IntegerWithType<IntegerType::e_SIGNED_CHAR> final {
+    using Type = signed char;
 };
 
-template <unsigned SIZE, typename TYPE>
-struct IntegerSearch<SIZE, TYPE> {
-
-    static_assert(SIZE == sizeof(TYPE),
-                  "None of the specified 'TYPES' had the specified 'SIZE'.");
-
-    using Type = TYPE;
+template <>
+struct IntegerWithType<IntegerType::e_SIGNED_SHORT_INT> final {
+    using Type = signed short int;
 };
 
-template <unsigned SIZE, typename... TYPES>
-using FirstTypeWithSize = typename IntegerSearch<SIZE, TYPES...>::Type;
+template <>
+struct IntegerWithType<IntegerType::e_SIGNED_INT> final {
+    using Type = signed int;
+};
 
-// TODO(nate): put the above into a utility.
+template <>
+struct IntegerWithType<IntegerType::e_SIGNED_LONG_INT> final {
+    using Type = signed long int;
+};
 
-template <unsigned SIZE>
-using SizedInteger = FirstTypeWithSize<SIZE,
-    signed char,
-    signed short int,
-    signed int,
-    signed long int,
-    signed long long int
->;
+template <>
+struct IntegerWithType<IntegerType::e_SIGNED_LONG_LONG_INT> final {
+    using Type = signed long long int;
+};
+
+                             // ==================
+                             // struct IntegerUtil
+                             // ==================
+
+struct IntegerUtil {
+
+    // CLASS METHODS
+    inline
+    static constexpr IntegerType typeWithSize(unsigned size)
+    {
+        if      (sizeof(signed char)          == size) {
+            return IntegerType::e_SIGNED_CHAR;
+        }
+        else if (sizeof(signed short int)     == size) {
+            return IntegerType::e_SIGNED_SHORT_INT;
+        }
+        else if (sizeof(signed int)           == size) {
+            return IntegerType::e_SIGNED_INT;
+        }
+        else if (sizeof(signed long int)      == size) {
+            return IntegerType::e_SIGNED_LONG_INT;
+        }
+        else if (sizeof(signed long long int) == size) {
+            return IntegerType::e_SIGNED_LONG_LONG_INT;
+        }
+        else {
+            return IntegerType::e_ERROR;
+        }
+    }
+
+    // TYPES
+    template <unsigned SIZE>
+    using IntegerWithSize = typename IntegerWithType<typeWithSize(SIZE)>::Type;
+};
+
+} // close unnamed namespace
 
 // TYPES
-using Integer8  = SizedInteger<1>;
-using Integer16 = SizedInteger<2>;
-using Integer32 = SizedInteger<4>;
-using Integer64 = SizedInteger<8>;
-using Integer   = SizedInteger<8>;
+using Integer8  = IntegerUtil::IntegerWithSize<1>;
+using Integer16 = IntegerUtil::IntegerWithSize<2>;
+using Integer32 = IntegerUtil::IntegerWithSize<4>;
+using Integer64 = IntegerUtil::IntegerWithSize<8>;
+using Integer   = IntegerUtil::IntegerWithSize<8>;
 
 // STATIC ASSERTIONS
 static_assert(1 == sizeof(Integer8 ), "");
@@ -89,10 +125,10 @@ static_assert(4 == alignof(Integer32), "");
 static_assert(8 == alignof(Integer64), "");
 static_assert(8 == alignof(Integer  ), "");
 
-} // close package namespace
-} // close product namespace
+} // close lrkp namespace
+} // close LarkCompiler namespace
 
-#endif // INCLUDED_LRKP_TEMPLATE
+#endif // INCLUDED_LRKP_INTEGER
 
 // ----------------------------------------------------------------------------
 // Copyright (c) 2016 Nathan Burgers

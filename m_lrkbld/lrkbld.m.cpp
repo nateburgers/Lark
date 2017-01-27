@@ -22,7 +22,7 @@ namespace posix {
 using Directory      = DIR;
 using DirectoryEntry = dirent;
 using FileNumber     = ino_t;
-using FileStatus     = struct stat;
+using FileMetadata   = struct stat;
 } // close posix namespace
 
 // ===========================================================================
@@ -217,7 +217,7 @@ class Optional {
 
     const Object& value() const;
 
-    bool hasValue() const;
+    bool isNull() const;
 
     explicit operator bool() const;
 };
@@ -412,11 +412,44 @@ class DirectoryEntryCursor : public VirtualCursor<DirectoryEntry> {
     explicit operator bool() const override;
 };
 
-                              // ================
-                              // class FileStatus
-                              // ================
+                               // ==============
+                               // class FileType
+                               // ==============
 
-class FileStatus {
+enum class FileType {
+    e_BLOCK,
+    e_CHARACTER,
+    e_FIFO,
+    e_REGULAR,
+    e_DIRECTORY,
+    e_SYMBOLIC_LINK,
+    e_SOCKET,
+};
+
+                             // ==================
+                             // class FileMetadata
+                             // ==================
+
+class FileMetadata {
+
+    FileType d_type;
+
+  public:
+    // CREATORS
+    FileMetadata() = delete;
+
+    FileMetadata(const FileType& fileType);
+
+    // MANIPULATORS
+    // ACCESSORS
+};
+
+                           // =======================
+                           // class VirtualFileSystem
+                           // =======================
+
+class VirtualFileSystem {
+
 };
 
                             // ====================
@@ -744,9 +777,140 @@ Optional<OBJECT_TYPE>& Optional<OBJECT_TYPE>::operator=(
     return *this;
 }
 
+template <typename OBJECT_TYPE>
+Optional<OBJECT_TYPE>& Optional<OBJECT_TYPE>::operator=(const Object& object)
+{
+    if (!d_isNull) {
+        d_data.destroyObject();
+    }
+    d_data.setObject(object);
+    return *this;
+}
+
+template <typename OBJECT_TYPE>
+Optional<OBJECT_TYPE>& Optional<OBJECT_TYPE>::operator=(Object&& object)
+{
+    if (!d_isNull) {
+        d_data.destroyObject();
+    }
+    d_data.setObject(std::move(object));
+    return *this;
+}
+
+template <typename       OBJECT_TYPE>
+template <typename OTHER_OBJECT_TYPE>
+Optional<OBJECT_TYPE>& Optional<OBJECT_TYPE>::operator=(
+                                                    OTHER_OBJECT_TYPE&& object)
+{
+    if (!d_isNull) {
+        d_data.destroyObject();
+    }
+    d_data.setObject(std::move(object));
+    return *this;
+}
+
+template <typename OBJECT_TYPE>
+OBJECT_TYPE& Optional<OBJECT_TYPE>::operator*()
+{
+    return d_data.object();
+}
+
+template <typename OBJECT_TYPE>
+OBJECT_TYPE *Optional<OBJECT_TYPE>::operator->()
+{
+    return &d_data.object();
+}
+
+template <typename OBJECT_TYPE>
+OBJECT_TYPE& Optional<OBJECT_TYPE>::value()
+{
+    return d_data.object();
+}
+
+template <typename    OBJECT_TYPE>
+template <typename... OBJECT_CONSTRUCTOR_ARGUMENTS>
+void Optional<OBJECT_TYPE>::createInPlace(
+                                   OBJECT_CONSTRUCTOR_ARGUMENTS&&... arguments)
+{
+    if (!d_isNull) {
+        d_data.destroyObject();
+    }
+    d_data.createInPlace(
+                     std::forward<OBJECT_CONSTRUCTOR_ARGUMENTS>(arguments)...);
+}
+
+template <typename OBJECT_TYPE>
+void Optional<OBJECT_TYPE>::reset()
+{
+    if (!d_isNull) {
+        d_data.destroyObject();
+    }
+}
+
 // ACCESSORS
+template <typename OBJECT_TYPE>
+const OBJECT_TYPE& Optional<OBJECT_TYPE>::operator*() const
+{
+    return d_data.object();
+}
+
+template <typename OBJECT_TYPE>
+const OBJECT_TYPE *Optional<OBJECT_TYPE>::operator->() const
+{
+    return &d_data.object();
+}
+
+template <typename OBJECT_TYPE>
+const OBJECT_TYPE& Optional<OBJECT_TYPE>::value() const
+{
+    return d_data.object();
+}
+
+template <typename OBJECT_TYPE>
+bool Optional<OBJECT_TYPE>::isNull() const
+{
+    return d_isNull;
+}
+
+template <typename OBJECT_TYPE>
+Optional<OBJECT_TYPE>::operator bool() const
+{
+    return !d_isNull;
+}
 
 // FREE OPERATORS
+template <typename LHS_OBJECT_TYPE, typename RHS_OBJECT_TYPE>
+bool operator==(const Optional<LHS_OBJECT_TYPE>& lhs,
+                const Optional<RHS_OBJECT_TYPE>& rhs)
+{
+    if (lhs.isNull()) {
+        if (rhs.isNull()) {
+            return true;                                              // RETURN
+        }
+        return false;                                                 // RETURN
+    }
+    if (rhs.isNull()) {
+        return false;                                                 // RETURN
+    }
+    return lhs.value() == rhs.value();
+}
+
+template <typename LHS_OBJECT_TYPE, typename RHS_OBJECT_TYPE>
+bool operator!=(const Optional<LHS_OBJECT_TYPE>& lhs,
+                const Optional<RHS_OBJECT_TYPE>& rhs)
+{
+    if (lhs.isNull()) {
+        if (rhs.isNull()) {
+            return false;                                             // RETURN
+        }
+        return true;                                                  // RETURN
+    }
+    if (rhs.isNull()) {
+        return true;                                                  // RETURN
+    }
+    return lhs.value() != rhs.value();
+}
+
 
                             // --------------------
                             // class DirectoryEntry

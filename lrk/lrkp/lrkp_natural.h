@@ -13,6 +13,20 @@
 
 namespace LarkCompiler {
 namespace lrkp {
+namespace {
+
+enum class UnsignedType {
+    e_UNSIGNED_CHAR          =  0,
+    e_UNSIGNED_SHORT_INT     =  1,
+    e_UNSIGNED_INT           =  2,
+    e_UNSIGNED_LONG_INT      =  3,
+    e_UNSIGNED_LONG_LONG_INT =  4,
+
+    e_ERROR                  = -1,
+};
+
+} // close unnamed namespace
+
 
                                // ============
                                // type NATURAL
