@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-PATH=./bin:$PATH bash
+PATH=$PWD/bin:$PATH bash
