@@ -13,25 +13,83 @@
 
 namespace LarkCompiler {
 namespace lrkp {
+namespace {
+
+enum class FloatingPointType {
+    e_FLOAT  =  0,
+    e_DOUBLE =  1,
+
+    e_ERROR  = -1,
+};
+
+            // ====================================================
+            // struct FloatingPointWithType<FloatingPointType TYPE>
+            // ====================================================
+
+template <FloatingPointType TYPE>
+struct FloatingPointWithType final {
+    struct Type;
+};
+
+template <>
+struct FloatingPointWithType<FloatingPointType::e_FLOAT> final {
+    using Type = float;
+};
+
+template <>
+struct FloatingPointWithType<FloatingPointType::e_DOUBLE> final {
+    using Type = double;
+};
+
+                          // ========================
+                          // struct FloatingPointUtil
+                          // ========================
+
+struct FloatingPointUtil {
+
+    // CLASS METHODS
+    static constexpr FloatingPointType typeWithSize(unsigned size)
+    {
+        if      (sizeof(float ) == size) {
+            return FloatingPointType::e_FLOAT;
+        }
+        else if (sizeof(double) == size) {
+            return FloatingPointType::e_DOUBLE;
+        }
+        else {
+            return FloatingPointType::e_ERROR;
+        }
+    }
+
+    // TYPES
+    template <unsigned SIZE>
+    using FloatingPointWithSize =
+        typename FloatingPointWithType<typeWithSize(SIZE)>::Type;
+
+};
+
+}; // close unnamed namespace
 
                                   // =========
                                   // type REAL
                                   // =========
 
 // TYPES
-using Real32 = float;
-using Real64 = double;
-using Real   = double;
-
-using LargeReal = long double;
+using Real32 = FloatingPointUtil::FloatingPointWithSize<4>;
+using Real64 = FloatingPointUtil::FloatingPointWithSize<8>;
+using Real   = FloatingPointUtil::FloatingPointWithSize<8>;
 
 // STATIC ASSERTIONS
 static_assert(4 == sizeof(Real32), "");
 static_assert(8 == sizeof(Real64), "");
 static_assert(8 == sizeof(Real  ), "");
 
-} // close package namespace
-} // close product namespace
+static_assert(4 == alignof(Real32), "");
+static_assert(8 == alignof(Real64), "");
+static_assert(8 == alignof(Real  ), "");
+
+} // close lrkp namespace
+} // close LarkCompiler namespace
 
 #endif // INCLUDED_LRKP_REAL
 

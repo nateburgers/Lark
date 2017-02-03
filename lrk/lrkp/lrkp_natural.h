@@ -25,6 +25,76 @@ enum class UnsignedType {
     e_ERROR                  = -1,
 };
 
+                 // ==========================================
+                 // struct UnsignedWithType<UnsignedType TYPE>
+                 // ==========================================
+
+template <UnsignedType TYPE>
+struct UnsignedWithType final {
+    struct Type;
+};
+
+template <>
+struct UnsignedWithType<UnsignedType::e_UNSIGNED_CHAR> final {
+    using Type = unsigned char;
+};
+
+template <>
+struct UnsignedWithType<UnsignedType::e_UNSIGNED_SHORT_INT> final {
+    using Type = unsigned short int;
+};
+
+template <>
+struct UnsignedWithType<UnsignedType::e_UNSIGNED_INT> final {
+    using Type = unsigned int;
+};
+
+template <>
+struct UnsignedWithType<UnsignedType::e_UNSIGNED_LONG_INT> final {
+    using Type = unsigned long int;
+};
+
+template <>
+struct UnsignedWithType<UnsignedType::e_UNSIGNED_LONG_LONG_INT> final {
+    using Type = unsigned long long int;
+};
+
+                             // ===================
+                             // struct UnsignedUtil
+                             // ===================
+
+struct UnsignedUtil {
+
+    // CLASS METHODS
+    static constexpr UnsignedType typeWithSize(unsigned size)
+    {
+        if      (sizeof(unsigned char         ) == size) {
+            return UnsignedType::e_UNSIGNED_CHAR;
+        }
+        else if (sizeof(unsigned short int    ) == size) {
+            return UnsignedType::e_UNSIGNED_SHORT_INT;
+        }
+        else if (sizeof(unsigned int          ) == size) {
+            return UnsignedType::e_UNSIGNED_INT;
+        }
+        else if (sizeof(unsigned long int     ) == size) {
+            return UnsignedType::e_UNSIGNED_LONG_INT;
+        }
+        else if (sizeof(unsigned long long int) == size) {
+            return UnsignedType::e_UNSIGNED_LONG_LONG_INT;
+        }
+        else {
+            return UnsignedType::e_ERROR;
+        }
+    }
+
+    // TYPES
+    template <unsigned SIZE>
+    using UnsignedWithSize =
+        typename UnsignedWithType<typeWithSize(SIZE)>::Type;
+
+};
+
 } // close unnamed namespace
 
 
@@ -33,11 +103,11 @@ enum class UnsignedType {
                                // ============
 
 // TYPES
-using Natural8  = unsigned           char;
-using Natural16 = unsigned     short  int;
-using Natural32 = unsigned      long  int;
-using Natural64 = unsigned long long  int;
-using Natural   = unsigned long long  int;
+using Natural8  = UnsignedUtil::UnsignedWithSize<1>;
+using Natural16 = UnsignedUtil::UnsignedWithSize<2>;
+using Natural32 = UnsignedUtil::UnsignedWithSize<4>;
+using Natural64 = UnsignedUtil::UnsignedWithSize<8>;
+using Natural   = UnsignedUtil::UnsignedWithSize<8>;
 
 // STATIC ASSERTIONS
 static_assert(1 == sizeof(Natural8 ), "");
@@ -46,8 +116,14 @@ static_assert(4 == sizeof(Natural32), "");
 static_assert(8 == sizeof(Natural64), "");
 static_assert(8 == sizeof(Natural  ), "");
 
-} // close package namespace
-} // close product namespace
+static_assert(1 == alignof(Natural8 ), "");
+static_assert(2 == alignof(Natural16), "");
+static_assert(4 == alignof(Natural32), "");
+static_assert(8 == alignof(Natural64), "");
+static_assert(8 == alignof(Natural  ), "");
+
+} // close lrkp namespace
+} // close LarkCompiler namespace
 
 #endif // INCLUDED_LRKP_NATURAL
 

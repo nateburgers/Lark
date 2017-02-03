@@ -75,19 +75,18 @@ struct IntegerWithType<IntegerType::e_SIGNED_LONG_LONG_INT> final {
 struct IntegerUtil {
 
     // CLASS METHODS
-    inline
     static constexpr IntegerType typeWithSize(unsigned size)
     {
-        if      (sizeof(signed char)          == size) {
+        if      (sizeof(signed char         ) == size) {
             return IntegerType::e_SIGNED_CHAR;
         }
-        else if (sizeof(signed short int)     == size) {
+        else if (sizeof(signed short int    ) == size) {
             return IntegerType::e_SIGNED_SHORT_INT;
         }
-        else if (sizeof(signed int)           == size) {
+        else if (sizeof(signed int          ) == size) {
             return IntegerType::e_SIGNED_INT;
         }
-        else if (sizeof(signed long int)      == size) {
+        else if (sizeof(signed long int     ) == size) {
             return IntegerType::e_SIGNED_LONG_INT;
         }
         else if (sizeof(signed long long int) == size) {
