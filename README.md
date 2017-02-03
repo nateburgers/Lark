@@ -2,7 +2,7 @@
 The Lark programming language is a linearly typed concurrent language featuring
 type inference and session types.
 
-# Index
+## Index
 
 <dl>
     <dt><code>/bin</code></dt>
