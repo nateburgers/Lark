@@ -10,12 +10,12 @@
 
                                 # Include Guard
 
-if test "defined" = "${INCLUDED_LRKB_CODEGENERATOR+defined}"; 
+if test "defined" = "${INCLUDED_LRKB_CODEGENERATOR+defined}";
 then
     return 0;
-else 
+else
     INCLUDED_LRKB_CODEGENERATOR=1;
-fi 
+fi
 
                                  # Main Program
 
@@ -59,10 +59,24 @@ function m_lshgen_uppercase
 # -----------------------------------------------------------------------------
 # m_lshgen_lowercase(string)
 #
-# ----------------------------------------------------------------------------- 
+# -----------------------------------------------------------------------------
 function m_lshgen_lowercase
 {
     echo "${1,,}";
+}
+
+function m_lshgen_fileName
+{
+    local componentId="$1";
+    local fileType="$2";
+
+    read -ra componentParts <<< `m_lshgen_splitString "$componentId" "::"`;
+    local package="${componentParts[0]}";
+    local component="${componentParts[1]}";
+    local lowercasePackage=`m_lshgen_lowercase "$package"`;
+    local lowercaseComponent=`m_lshgen_lowercase "$component"`;
+
+    echo "${lowercasePackage}_${lowercaseComponent}.${fileType}";
 }
 
 # -----------------------------------------------------------------------------
@@ -75,26 +89,26 @@ function m_lshgen_generateCopyright
     local year="$2";
     m_lshgen_heredoc <<EOF
 // ----------------------------------------------------------------------------
-// Copyright (c) ${year} ${author}                                              
-//                                                                             
+// Copyright (c) ${year} ${author}
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to    
-// deal in the Software without restriction, including without limitation the  
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
-// sell copies of the Software, and to permit persons to whom the Software is  
-// furnished to do so, subject to the following conditions:                    
-//                                                                             
-// The above copyright notice and this permission notice shall be included in  
-// all copies or substantial portions of the Software.                         
-//                                                                             
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR  
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,    
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER      
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING     
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-// IN THE SOFTWARE.                                                            
-// ------------------------------ END-OF-FILE ---------------------------------  
+// IN THE SOFTWARE.
+// ------------------------------ END-OF-FILE ---------------------------------
 EOF
 }
 
@@ -138,7 +152,7 @@ ${fileNameBanner}${bannerSep}${fileTypeBanner}
 //@PURPOSE: Provide ...
 //
 //@TYPES:
-//  ${lowercasePackage}::${component}: 
+//  ${lowercasePackage}::${component}:
 //
 //@SEE_ALSO:
 //
@@ -157,7 +171,7 @@ ${componentBannerSep}// ${componentBannerText}
 ${componentBannerSep}// ${componentBannerFlag}
 
 class $component
-    // This value-semantic class is primarily provided to ... 
+    // This value-semantic class is primarily provided to ...
 {
   public:
     // TYPES
@@ -196,7 +210,7 @@ lrkp::Boolean operator!= (const ${package}::${component}& lhs,
 ${componentBannerSep}// ${impBannerFlag}
 ${componentBannerSep}// ${componentBannerText}
 ${componentBannerSep}// ${impBannerFlag}
- 
+
 // CREATORS
 
 // MANIPULATORS
@@ -242,7 +256,7 @@ function m_lshgen_generateSource
     local componentBannerSep=`printf "%${componentBannerSepLength}s"`;
 
     local year=`printf "%(%Y)T"`;
-    local copyright=`m_lshgen_generateCopyright "$author" "$year"`; 
+    local copyright=`m_lshgen_generateCopyright "$author" "$year"`;
 
     m_lshgen_heredoc <<EOF
 ${fileNameBanner}${bannerSep}${fileTypeBanner}
@@ -270,7 +284,7 @@ ${componentBannerSep}// ${componentBannerFlag}
 ${copyright}
 EOF
 }
- 
+
 # -----------------------------------------------------------------------------
 # m_lshgen_generateTestDriver(componentId, author)
 #
@@ -302,7 +316,7 @@ function m_lshgen_generateTestDriver
 
     local year=`printf "%(%Y)T"`;
     local copyright=`m_lshgen_generateCopyright "$author" "$year"`;
- 
+
     m_lshgen_heredoc <<EOF
 ${fileNameBanner}${bannerSep}${fileTypeBanner}
 #include <${lowercasePackage}_${lowercaseComponent}.h>
@@ -315,7 +329,7 @@ using namespace ${lowercasePackage};
 //-----------------------------------------------------------------------------
 //                                  Overview
 //                                  --------
-// '${lowercasePackage}::${component}' provides ... 
+// '${lowercasePackage}::${component}' provides ...
 // This test driver tests ...
 //-----------------------------------------------------------------------------
 // CREATORS
@@ -329,8 +343,8 @@ using namespace ${lowercasePackage};
 #endif
 
 #define ASSERT(CONDITION) TestHarnessUtil::assert((CONDITION), __LINE__)
-    // This macro asserts that the specified 'CONDITION' is 'true' using 
-    // the 'TestHarnessUtil', providing the line number at the point of 
+    // This macro asserts that the specified 'CONDITION' is 'true' using
+    // the 'TestHarnessUtil', providing the line number at the point of
     // macro expansion.
 
 
@@ -352,7 +366,7 @@ void aSsErT(bool condition, const char *message, int line)
 
 //=============================================================================
 //                                MAIN PROGRAM
-//----------------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 
 int main (int argc, char *argv[])
 {
@@ -369,7 +383,7 @@ int main (int argc, char *argv[])
             // BREATHING TEST
             //   This case exercises (but does not fully test) basic
             //   functionality.
-            // 
+            //
             // Concerns:
             //: 1 The class is sufficiently functional to enable comprehensive
             //    testing in subsequent test cases.
@@ -400,14 +414,188 @@ EOF
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# m_lshgen_main(componentId, author)
+# m_lshgen_printUsage()
+#
+# -----------------------------------------------------------------------------
+function m_lshgen_printUsage
+{
+    m_lshgen_heredoc <<EOF
+Usage: generate.sh <flag> <packageName>::<componentName>
+
+    Where <flag> is exactly one of the following:
+
+        -h | --header       Generate a stub header file
+
+        -s | --source       Generate a stub source file
+
+        -t | --test         Generate a stub test file
+
+        -a | --all          Generate all 3 files
+
+    Write stub files for the component with the name specified as
+    "'packageName'::'componentName'".
+EOF
+}
+
+function m_lshgen_writeHeader
+{
+    local componentId="$1";
+
+    # get the name and data for the file to write
+    local fileName=`m_lshgen_fileName "$componentId" "h"`;
+    local fileContents=`m_lshgen_generateHeader "$componentId"`;
+
+    # Ensure the file doesn't already exist
+    if [ -f "$fileName" ];
+    then
+        local warning="Warning: The file \"$fileName\" already exists";
+        local override="Overwrite? [y/N]: ";
+        local prompt="$warning. $override";
+
+        printf "$prompt";
+        read -n 1 response;
+        printf "\n";
+
+        case $response in
+            [yY])
+                # continue
+                ;;
+
+            *)
+                echo "Ignoring write to file \"$fileName\".";
+                return 0;                                              # RETURN
+                ;;
+        esac;
+    fi;
+
+    echo "Writing header stub to \"$fileName\"";
+    echo "$fileContents" > "$fileName";
+    echo;
+}
+
+function m_lshgen_writeSource
+{
+    local componentId="$1";
+
+    # get the name and data for the file to write
+    local fileName=`m_lshgen_fileName "$componentId" "cpp"`;
+    local fileContents=`m_lshgen_generateSource "$componentId"`;
+
+    # Ensure the file doesn't already exist
+    if [ -f "$fileName" ];
+    then
+        local warning="Warning: The file \"$fileName\" already exists";
+        local override="Overwrite? [y/N]: ";
+        local prompt="$warning. $override";
+
+        printf "$prompt";
+        read -n 1 response;
+        printf "\n";
+
+        case $response in
+            [yY])
+                # continue
+                ;;
+
+            *)
+                echo "Ignoring write to file \"$fileName\".";
+                return 0;                                              # RETURN
+                ;;
+        esac;
+    fi;
+
+    echo "Writing source stub to \"$fileName\"";
+    echo "$fileContents" > "$fileName";
+    echo;
+}
+
+# -----------------------------------------------------------------------------
+# m_lshgen_writeDriver(fileName, fileContents)
+#
+# -----------------------------------------------------------------------------
+function m_lshgen_writeDriver
+{
+    local componentId="$1";
+
+    # get the name and data for the file to write
+    local fileName=`m_lshgen_fileName "$componentId" "t.cpp"`;
+    local fileContents=`m_lshgen_generateTestDriver "$componentId"`;
+
+    # Ensure the file doesn't already exist
+    if [ -f "$fileName" ];
+    then
+        local warning="Warning: The file \"$fileName\" already exists";
+        local override="Overwrite? [y/N]: ";
+        local prompt="$warning. $override";
+
+        printf "$prompt";
+        read -n 1 response;
+        printf "\n";
+
+        case $response in
+            [yY])
+                # continue
+                ;;
+
+            *)
+                echo "Ignoring write to file \"$fileName\".";
+                return 0;                                              # RETURN
+                ;;
+        esac;
+    fi;
+
+    echo "Writing test driver stub to \"$fileName\"";
+    echo "$fileContents" > "$fileName";
+    echo;
+}
+
+# -----------------------------------------------------------------------------
+# m_lshgen_main(componentId)
 #
 # -----------------------------------------------------------------------------
 function m_lshgen_main
 {
-    m_lshgen_generateHeader "lrku::ComponentName" "Nathan Burgers";
-    m_lshgen_generateSource "lrku::ComponentName" "Nathan Burgers";
-    m_lshgen_generateTestDriver "lrku::ComponentName" "Nathan Burgers";
+    if [ -z "$1" ];
+    then
+        m_lshgen_printUsage;
+        exit 0;
+    elif [ -z "$2" ];
+    then
+        m_lshgen_printUsage;
+        exit 0;
+    else
+        # read out command line arguments
+        local flag="$1";
+        local componentId="$2";
+
+        case $flag in
+            "-a" | "--all")
+                m_lshgen_writeHeader "$componentId"
+                m_lshgen_writeSource "$componentId"
+                m_lshgen_writeDriver "$componentId"
+                exit 0;
+                ;;
+
+            "-h" | "--header")
+                m_lshgen_writeHeader "$componentId"
+                exit 0;
+                ;;
+
+            "-s" | "--source")
+                m_lshgen_writeSource "$componentId"
+                exit 0;
+                ;;
+
+            "-t" | "--test")
+                m_lshgen_writeDriver "$componentId"
+                exit 0;
+                ;;
+            *)
+                m_lshgen_printUsage;
+                exit 0;
+                ;;
+        esac;
+    fi;
 }
 
 m_lshgen_main "$1" "$2"
