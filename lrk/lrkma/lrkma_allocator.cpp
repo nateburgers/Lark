@@ -1,32 +1,27 @@
-// lrkp_size.h                                                        -*-C++-*-
-#ifndef INCLUDED_LRKP_SIZE
-#define INCLUDED_LRKP_SIZE
-
-#ifndef INCLUDED_LRKP_NATURAL
-#include <lrkp_natural.h>
-#endif
-
+// lrkma_allocator.cpp                                                -*-C++-*-
+#include <lrkma_allocator.h>
 
 namespace LarkCompiler {
-namespace lrkp {
+namespace lrkma {
+namespace {
 
-                                  // =========
-                                  // type SIZE
-                                  // =========
+} // close unnamed namespace
 
-// TYPES
-using Size = Natural64;
+                              // ---------------
+                              // class ALLOCATOR
+                              // ---------------
 
-// STATIC ASSERTIONS
-static_assert(8 == sizeof(Size), "");
+// CREATORS
 
-} // close package namespace
-} // close product namespace
+// MANIPULATORS
 
-#endif // INCLUDED_LRKP_SIZE
+// ACCESSORS
+
+} // close namespace lrkma
+} // close namespace LarkCompiler
 
 // ----------------------------------------------------------------------------
-// Copyright (c) 2016 Nathan Burgers
+// Copyright (c) 2017 
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to

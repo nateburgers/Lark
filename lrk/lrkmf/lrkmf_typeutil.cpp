@@ -1,32 +1,27 @@
-// lrkp_size.h                                                        -*-C++-*-
-#ifndef INCLUDED_LRKP_SIZE
-#define INCLUDED_LRKP_SIZE
-
-#ifndef INCLUDED_LRKP_NATURAL
-#include <lrkp_natural.h>
-#endif
-
+// lrkmf_typeutil.cpp                                                 -*-C++-*-
+#include <lrkmf_typeutil.h>
 
 namespace LarkCompiler {
-namespace lrkp {
+namespace lrkmf {
+namespace {
 
-                                  // =========
-                                  // type SIZE
-                                  // =========
+} // close unnamed namespace
 
-// TYPES
-using Size = Natural64;
+                               // --------------
+                               // class TYPEUTIL
+                               // --------------
 
-// STATIC ASSERTIONS
-static_assert(8 == sizeof(Size), "");
+// CREATORS
 
-} // close package namespace
-} // close product namespace
+// MANIPULATORS
 
-#endif // INCLUDED_LRKP_SIZE
+// ACCESSORS
+
+} // close namespace lrkmf
+} // close namespace LarkCompiler
 
 // ----------------------------------------------------------------------------
-// Copyright (c) 2016 Nathan Burgers
+// Copyright (c) 2017 
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
