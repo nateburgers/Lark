@@ -10,11 +10,14 @@
 // Standard library dependencies
 #include <iostream>
 #include <memory>
+#include <set>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
 // Posix dependencies
 namespace posix {
+extern "C" {
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -23,6 +26,7 @@ using Directory      = DIR;
 using DirectoryEntry = dirent;
 using FileNumber     = ino_t;
 using FileMetadata   = struct stat;
+} // close extern "C"
 } // close posix namespace
 
 // ===========================================================================
@@ -456,17 +460,78 @@ class VirtualFileSystem {
                             // struct DirectoryUtil
                             // ====================
 
-struct DirectoryUtil {
+//struct DirectoryUtil {
+//
+//    // CLASS METHODS
+//    static Directory open(const std::string& name);
+//
+//    static Cursor<DirectoryEntry> list(const std::string& name);
+//};
+//
+//struct DirectoryEntryUtil {
+//    static FileStatus stat(const DirectoryEntry& entry);
+//};
+
+                                 // ==========
+                                 // class Path
+                                 // ==========
+
+class Path {
+
+    // DATA
+    std::vector<std::string> d_path;
+
+  public:
+    // CREATORS
+    Path() = default;
+
+    Path(const Path&  original) = default;
+    Path(      Path&& original) = default;
+
+    // MANIPULATORS
+    Path& operator=(const Path&  original) = default;
+    Path& operator=(      Path&& original) = default;
+
+    void addChild(const std::string& directory);
+
+    void addChild(const Path& path);
+
+    void removeChild();
+
+    void addParent(const std::string& directory);
+
+    void addParent(const Path& path);
+
+    // ACCESSORS
+    Path child(const std::string& name) const;
+
+    Path child(const Path& path) const;
+
+    bool isRoot() const;
+
+    Path parent() const;
+
+    std::string string() const;
+
+    std::string relativeString() const;
+
+};
+
+                           // =======================
+                           // struct AbsolutePathUtil
+                           // =======================
+
+struct PathUtil  {
 
     // CLASS METHODS
-    static Directory open(const std::string& name);
+    static Path parseRelative(const char path[]);
 
-    static Cursor<DirectoryEntry> list(const std::string& name);
+    static Path parseAbsolute(const char path[]);
+
+    // CREATORS
+    PathUtil() = delete;
 };
 
-struct DirectoryEntryUtil {
-    static FileStatus stat(const DirectoryEntry& entry);
-};
 
 } // close unnamed namespace
 
@@ -474,16 +539,82 @@ struct DirectoryEntryUtil {
 //                                MAIN PROGRAM
 // ============================================================================
 
-int main(int numArguments, const char *arguments[])
+template <typename T> inline
+static void unused(T&& object)
 {
-    static_cast<void>(numArguments);
-    static_cast<void>(arguments);
+    static_cast<void>(object);
+}
 
-    for (Cursor<DirectoryEntry> fileCursor = DirectoryUtil::list(".");
-                                fileCursor;
-                              ++fileCursor) {
-        const FileStatus stat = DirectoryEntryUtil::stat(*fileCursor);
-        static_cast<void>(stat);
+template <typename T, typename... Ts> inline
+static void unused(T&& head, Ts&&... tail)
+{
+    unused(head);
+    unused(tail...);
+}
+
+static int readPackage(std::ostream&          error,
+                       std::set<std::string> *components,
+                       posix::DIR            *directory,
+                       const char             metadataDirectory[])
+{
+    unused(error, components, directory, metadataDirectory);
+
+    for (posix::dirent *entry  = posix::readdir(directory);
+                        entry != nullptr;
+                        entry  = posix::readdir(directory)) {
+    }
+    return 0;
+}
+
+static int readPackages(std::ostream&          error,
+                        std::set<std::string> *components,
+                        posix::dirent         *directory,
+                        const char             subdirectory[],
+                        const char             metadataDirectory[])
+{
+    unused(error, components, directory, subdirectory, metadataDirectory);
+    return 0;
+}
+
+static int readPackageGroups(std::ostream&          error,
+                             std::set<std::string> *components,
+                             posix::DIR            *directory)
+{
+    unused(error, components, directory);
+    return 0;
+}
+
+int main(int argc, const char *argv[])
+{
+    unused(argc, argv);
+
+    posix::DIR *directory = posix::opendir(".");
+    if (nullptr == directory) {
+        std::cerr << "Unable to open the current directory."
+                  << std::flush;
+        return -1;                                                    // RETURN
+    }
+
+    std::string           error;
+    std::set<std::string> components;
+
+    if (0 != readPackages(std::cerr, &components, directory, "applications",
+                          "application")) {
+        return -1;                                                    // RETURN
+    }
+
+    if (0 != readPackages(std::cerr, &components, directory, "adapters",
+                          "package")) {
+        return -1;                                                    // RETURN
+    }
+
+    if (0 != readPackages(std::cerr, &components, directory, "standalone",
+                          "package")) {
+        return -1;                                                    // RETURN
+    }
+
+    if (0 != readPackageGroups(std::cerr, &components, directory)) {
+        return -1;                                                    // RETURN
     }
 
     return 0;
@@ -494,7 +625,6 @@ int main(int numArguments, const char *arguments[])
 // ============================================================================
 
 namespace {
-
 
                                  // ----------
                                  // class Unit
@@ -989,17 +1119,17 @@ void Directory::seek(long int steps)
                              // -------------------
 
 // CLASS METHODS
-Directory DirectoryUtil::open(const std::string& name)
-{
-    return Directory(posix::opendir(name.c_str()));
-}
-
-Cursor<DirectoryEntry> DirectoryUtil::list(const std::string& name)
-{
-    std::unique_ptr<DirectoryEntryCursor> cursor =
-                            std::make_unique<DirectoryEntryCursor>(open(name));
-    return Cursor<DirectoryEntry>(std::move(cursor));
-}
+//Directory DirectoryUtil::open(const std::string& name)
+//{
+//    return Directory(posix::opendir(name.c_str()));
+//}
+//
+//Cursor<DirectoryEntry> DirectoryUtil::list(const std::string& name)
+//{
+//    std::unique_ptr<DirectoryEntryCursor> cursor =
+//                            std::make_unique<DirectoryEntryCursor>(open(name));
+//    return Cursor<DirectoryEntry>(std::move(cursor));
+//}
 
 } // close unnamed namespace
 

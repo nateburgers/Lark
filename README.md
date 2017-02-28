@@ -5,7 +5,7 @@ type inference and session types.
 ## Index
 
 <dl>
-    <dt>/bin</dt>
+    <dt><code>/bin</code></dt>
     <dd>
         A collection of shell script utilities used during development.
     </dd>
