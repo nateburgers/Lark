@@ -310,6 +310,196 @@ class Cursor {
     explicit operator bool() const;
 };
 
+struct VirtualDirectory {
+};
+
+class TestDirectory final : public VirtualDirectory {
+};
+
+class Directory final {
+};
+
+struct VirtualFile {
+};
+
+class TestFile final : public VirtualFile {
+};
+
+class File final {
+};
+
+                            // ====================
+                            // class DirectoryEntry
+                            // ====================
+
+class DirectoryEntry {
+
+    // PRIVATE TYPES
+    enum class Tag : public int {
+        e_DIRECTORY,
+        e_FILE,
+    };
+
+    // DATA
+    Tag d_tag;
+    union {
+        Directory d_directory;
+        File      d_file;
+    };
+
+  public:
+    // CREATORS
+    DirectoryEntry() = delete;
+
+    DirectoryEntry(const DirectoryEntry&  original) = delete;
+    DirectoryEntry(      DirectoryEntry&& original) = default;
+
+    explicit DirectoryEntry(Directory&& directory);
+
+    explicit DirectoryEntry(File&& file);
+
+    ~DirectoryEntry() = default;
+
+    // MANIPULATORS
+    DirectoryEntry& operator=(const DirectoryEntry&  original) = delete;
+    DirectoryEntry& operator=(      DirectoryEntry&& original) = default;
+
+    Directory& theDirectory();
+
+    File& theFile();
+
+    void setDirectory(Directory&& directory);
+
+    void setFile(File&& file);
+
+    // ACCESSORS
+    bool isDirectory() const;
+
+    bool isFile() const;
+
+    const Directory& theDirectory() const;
+
+    const File& theFile() const;
+};
+
+                          // ========================
+                          // struct VirtualFileSystem
+                          // ========================
+
+struct VirtualFileSystem {
+
+    // CREATORS
+    virtual ~VirtualFileSystem() = 0;
+
+    // MANIPULATORS
+    virtual DirectoryEntry entry(const Path& path) = 0;
+
+};
+
+                        // =============================
+                        // struct VirtualOperatingSystem
+                        // =============================
+
+struct VirtualOperatingSystem {
+
+    // CREATORS
+    virtual ~VirtualOperatingSytem() = 0;
+        // Destroy this object.
+
+    // MANIPULATORS
+    virtual FileSystem& fileSystem() = 0;
+
+    // ACCESSORS
+    virtual const FileSystem& fileSystem() const = 0;
+};
+
+                          // =========================
+                          // class TestOperatingSystem
+                          // =========================
+
+class TestOperatingSystem final : public VirtualOperatingSystem {
+
+    // DATA
+    FileSystem d_fileSystem;
+
+  public:
+    // CREATORS
+    TestOperatingSystem() = default;
+
+    TestOperatingSystem(const TestOperatingSystem&  original) = delete;
+    TestOperatingSystem(      TestOperatingSystem&& original) = default;
+
+    explicit TestOperatingSystem(FileSystem&& fileSystem);
+
+    ~TestOperatingSystem() override = default;
+
+    // MANIPULATORS
+    TestOperatingSystem& operator=(const TestOperatingSystem& original)
+                                                                      = delete;
+    TestOperatingSystem& operator=(TestOperatingSystem&& original) = default;
+
+    void setFileSystem(FileSystem&& fileSystem);
+
+                      // 'VirtualOperatingSystem' protocol
+
+    FileSystem& fileSystem() override;
+
+
+    // ACCESSORS
+
+                      // 'VirtualOperatingSystem' protocol
+
+    const FileSystem& fileSystem() const override;
+};
+
+                            // =====================
+                            // class OperatingSystem
+                            // =====================
+
+class OperatingSystem final {
+
+  public:
+    // TYPES
+    using Impl = VirtualOperatingSystem;
+
+  private:
+    // DATA
+    std::unique_ptr<Impl> d_impl_up;
+
+  public:
+    // CREATORS
+    OperatingSystem() = default;
+
+    OperatingSystem(const OperatingSystem&  original) = delete;
+    OperatingSystem(      OperatingSystem&& original) = default;
+
+    explicit OperatingSystem(std::unique_ptr<Impl>&& impl);
+
+    ~OperatingSystem() = default;
+
+    // MANIPULATORS
+    OperatingSystem& operator=(const OperatingSystem&  original) = delete;
+    OperatingSystem& operator=(      OperatingSystem&& original) = default;
+
+    FileSystem& fileSystem();
+
+    // ACCESSORS
+    const FileSystem& fileSystem() const;
+};
+
+                         // ==========================
+                         // struct OperatingSystemUtil
+                         // ==========================
+
+struct OperatingSystemUtil {
+
+    // CLASS METHODS
+    static OperatingSystem native();
+
+    // CREATORS
+    OperatingSystemUtil() = delete;
+};
+
                             // ====================
                             // class DirectoryEntry
                             // ====================
