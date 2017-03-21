@@ -13,7 +13,7 @@
 //
 //@SEE_ALSO: lrkp_natural, lrkp_real
 //
-//@DESCRIPTION:
+//@DESCRIPTION: This component
 //
 
 namespace LarkCompiler {

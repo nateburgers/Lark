@@ -1,24 +1,5 @@
-// lrkp_template.cpp                                                  -*-C++-*-
-#include <lrkp_template.h>
-
-namespace {
-} // close unnamed namespace
-
-namespace LarkCompiler {
-namespace lrkp {
-
-                               // --------------
-                               // class TEMPLATE
-                               // --------------
-
-// CREATORS
-
-// MANIPULATORS
-
-// ACCESSORS
-
-} // close package namespace
-} // close product namespace
+// lrkp_real.cpp                                                       -*-C++-*-
+#include <lrkp_real.h>
 
 // ----------------------------------------------------------------------------
 // Copyright (c) 2016 Nathan Burgers
